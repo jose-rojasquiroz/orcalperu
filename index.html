@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orientación de calles en las principales ciudades del Perú</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-costa: #c7cb52;
+            --color-sierra: #98692e;
+            --color-selva: #62a162;
+            --color-text: #2c3e50;
+            --color-text-light: #7f8c8d;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f8f9fa;
+            --max-width: 1400px;
+        }
+
+        body {
+            font-family: "Computer Modern Serif", serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background: var(--color-bg);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(199, 203, 82, 0.05) 0%, rgba(152, 105, 46, 0.05) 50%, rgba(98, 161, 98, 0.05) 100%);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--color-text);
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--color-text-light);
+            max-width: 800px;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        /* NARRATIVE SECTION */
+        .narrative-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 4rem 2rem;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            gap: 4rem;
+        }
+
+        .narrative-text {
+            flex: 0 0 25%;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--color-text-light);
+        }
+
+        .narrative-text h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--color-text);
+        }
+
+        .region-costa .narrative-text h2 { color: var(--color-costa); }
+        .region-sierra .narrative-text h2 { color: var(--color-sierra); }
+        .region-selva .narrative-text h2 { color: var(--color-selva); }
+
+        .cities-showcase {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* CITY SHOWCASE CARD */
+        .city-showcase {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .city-showcase:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+        }
+
+        .showcase-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            background: var(--color-bg-alt);
+        }
+
+        .showcase-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 0.25rem;
+        }
+
+        .showcase-location {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        .showcase-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .showcase-visual {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-bg-alt);
+            aspect-ratio: 1;
+        }
+
+        .showcase-visual img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .showcase-stats {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 1.5rem;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-text-light);
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        /* FILTER SECTION */
+        .filter-section {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            background: var(--color-bg-alt);
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .filter-section h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--color-text);
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--color-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select {
+            padding: 0.75rem;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 1rem;
+            color: var(--color-text);
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--color-text);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        .filter-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .city-option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .city-option:hover {
+            border-color: var(--color-text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .city-option.selected {
+            background: var(--color-text);
+            color: white;
+            border-color: var(--color-text);
+        }
+
+        .city-option.selected .city-option-name {
+            color: white;
+        }
+
+        .city-option-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: var(--color-text);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .download-btn:disabled {
+            background: #bbb;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .select-all-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #666;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .select-all-btn:hover {
+            background: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .clear-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #888;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #777;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--color-text);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            margin-bottom: 1rem;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        footer a:hover {
+            opacity: 0.8;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .footer-link-btn {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .footer-link-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+            .narrative-section {
+                flex-direction: column;
+                min-height: auto;
+                padding: 2rem 1rem;
+            }
+            .narrative-text {
+                flex: 0 0 auto;
+            }
+            .cities-showcase {
+                order: -1;
+            }
+            .showcase-content {
+                grid-template-columns: 1fr;
+            }
+            .showcase-visual {
+                aspect-ratio: auto;
+                min-height: 200px;
+            }
+            .filter-controls {
+                grid-template-columns: 1fr;
+            }
+            .filter-results {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            .filter-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .download-btn, .select-all-btn, .clear-btn {
+                width: 100%;
+            }
+        }
+
+        /* LOADING STATE */
+        .loading {
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1>Orientación de calles en las principales ciudades del Perú</h1>
+        <p>
+            Explora la estructura vial urbana a través de la orientación de las calles 
+            en las tres ciudades más pobladas de cada región natural del Perú.
+        </p>
+    </section>
+
+    <!-- COSTA SECTION -->
+    <section id="costa" class="narrative-section region-costa">
+        <div class="narrative-text">
+            <h2>Costa</h2>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+        </div>
+        <div class="cities-showcase" id="showcase-costa"></div>
+    </section>
+
+    <!-- SIERRA SECTION -->
+    <section id="sierra" class="narrative-section region-sierra">
+        <div class="narrative-text">
+            <h2>Sierra</h2>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+        </div>
+        <div class="cities-showcase" id="showcase-sierra"></div>
+    </section>
+
+    <!-- SELVA SECTION -->
+    <section id="selva" class="narrative-section region-selva">
+        <div class="narrative-text">
+            <h2>Selva</h2>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+        </div>
+        <div class="cities-showcase" id="showcase-selva"></div>
+    </section>
+
+    <!-- FILTER SECTION -->
+    <section class="filter-section" id="filtros">
+        <h2>Explora todas las ciudades</h2>
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label for="filter-region">Región</label>
+                <select id="filter-region" onchange="updateFilters()">
+                    <option value="">Todas</option>
+                    <option value="Costa">Costa</option>
+                    <option value="Sierra">Sierra</option>
+                    <option value="Selva">Selva</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-department">Departamento</label>
+                <select id="filter-department" onchange="updateFilters()">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+        </div>
+        <div class="filter-results" id="filter-results"></div>
+        <div class="filter-actions">
+            <button class="download-btn" id="download-selected-btn" onclick="downloadSelected()" disabled>
+                Descargar fichas seleccionadas
+            </button>
+            <button class="select-all-btn" onclick="selectAll()">
+                Seleccionar todos
+            </button>
+            <button class="clear-btn" onclick="clearSelection()">
+                Limpiar selección
+            </button>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>Elaborado por <a href="https://jose-rojasquiroz.github.io/" target="_blank">José Rojas-Quiroz</a></p>
+        <p>Datos: INEI 2017, OpenStreetMap y OSMNx</p>
+        <div class="footer-links">
+            <a href="data/peru_sno.gpkg" class="footer-link-btn" download>📥 Descargar GeoPackage</a>
+            <a href="https://github.com/jose-rojasquiroz/peru_sno" target="_blank" class="footer-link-btn">🔗 Ver repositorio GitHub</a>
+        </div>
+    </footer>
+
+    <script>
+        const DATA_PATH = 'data/';
+        let allCities = [];
+        let selectedCities = new Set();
+
+        // Función para formatear números
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(0) + 'K';
+            }
+            return num.toString();
+        }
+
+        // Crear tarjeta de ciudad para showcase
+        function createShowcaseCard(city) {
+            const card = document.createElement('div');
+            card.className = 'city-showcase';
+            
+            const polarImg = `graficos/${city.nombre}_polar.png`;
+            const mapImg = `mapas/${city.nombre}_mapa.png`;
+            
+            card.innerHTML = `
+                <div class="showcase-header">
+                    <div class="showcase-name">${city.nombre}</div>
+                    <div class="showcase-location">${city.provincia || 'N/A'}, ${city.departamento || 'N/A'}</div>
+                </div>
+                <div class="showcase-content">
+                    <div class="showcase-visual">
+                        <img src="${polarImg}" alt="Orientación ${city.nombre}" 
+                             onerror="this.alt='Gráfico no disponible'">
+                    </div>
+                    <div class="showcase-visual">
+                        <img src="${mapImg}" alt="Mapa ${city.nombre}"
+                             onerror="this.alt='Mapa no disponible'">
+                    </div>
+                </div>
+                <div class="showcase-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Población</span>
+                        <span class="stat-value">${formatNumber(city.poblacion)}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Área</span>
+                        <span class="stat-value">${city.area_km2.toFixed(1)} km²</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Densidad</span>
+                        <span class="stat-value">${Math.round(city.densidad)} hab/km²</span>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Cargar datos de una región para showcase
+        async function loadShowcase(region) {
+            const showcaseId = `showcase-${region}`;
+            const container = document.getElementById(showcaseId);
+            
+            try {
+                const response = await fetch(`${DATA_PATH}${region}_top3.json`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const cities = await response.json();
+                container.innerHTML = '';
+                cities.forEach(city => {
+                    container.appendChild(createShowcaseCard(city));
+                });
+                
+            } catch (error) {
+                console.error(`Error cargando ${region}:`, error);
+                container.innerHTML = `<div style="grid-column: 1/-1; color: #c33;">Error cargando datos</div>`;
+            }
+        }
+
+        // Cargar todas las ciudades
+        async function loadAllCities() {
+            try {
+                const response = await fetch(`${DATA_PATH}ciudades.json`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                allCities = await response.json();
+                populateFilters();
+                displayFilterResults();
+                
+            } catch (error) {
+                console.error('Error cargando ciudades:', error);
+            }
+        }
+
+        // Poblar filtros
+        function populateFilters() {
+            const departments = new Set();
+            
+            allCities.forEach(city => {
+                if (city.departamento) departments.add(city.departamento);
+            });
+            
+            const deptSelect = document.getElementById('filter-department');
+            
+            Array.from(departments).sort().forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept;
+                option.textContent = dept;
+                deptSelect.appendChild(option);
+            });
+        }
+
+        // Actualizar filtros
+        function updateFilters() {
+            displayFilterResults();
+        }
+
+        // Mostrar resultados de filtros
+        function displayFilterResults() {
+            const region = document.getElementById('filter-region').value;
+            const department = document.getElementById('filter-department').value;
+            
+            const filtered = allCities.filter(city => {
+                if (region && city.region !== region) return false;
+                if (department && city.departamento !== department) return false;
+                return true;
+            });
+            
+            const resultsContainer = document.getElementById('filter-results');
+            resultsContainer.innerHTML = '';
+            
+            filtered.forEach(city => {
+                const option = document.createElement('div');
+                option.className = 'city-option';
+                if (selectedCities.has(city.nombre)) {
+                    option.classList.add('selected');
+                }
+                
+                option.innerHTML = `
+                    <div class="city-option-name">${city.nombre}</div>
+                `;
+                
+                option.onclick = () => toggleSelection(city.nombre, option);
+                resultsContainer.appendChild(option);
+            });
+        }
+
+        // Alternar selección
+        function toggleSelection(cityName, element) {
+            if (selectedCities.has(cityName)) {
+                selectedCities.delete(cityName);
+                element.classList.remove('selected');
+            } else {
+                selectedCities.add(cityName);
+                element.classList.add('selected');
+            }
+            
+            document.getElementById('download-selected-btn').disabled = selectedCities.size === 0;
+        }
+
+        // Descargar fichas seleccionadas
+        function downloadSelected() {
+            if (selectedCities.size === 0) return;
+            
+            selectedCities.forEach(cityName => {
+                const link = document.createElement('a');
+                link.href = `fichas/${cityName.replace(/ /g, '_')}_ficha.png`;
+                link.download = `${cityName}_ficha.png`;
+                link.click();
+            });
+        }
+
+        // Limpiar selección
+        function clearSelection() {
+            selectedCities.clear();
+            displayFilterResults();
+            document.getElementById('download-selected-btn').disabled = true;
+        }
+
+        // Seleccionar todos
+        function selectAll() {
+            const region = document.getElementById('filter-region').value;
+            const department = document.getElementById('filter-department').value;
+            
+            const filtered = allCities.filter(city => {
+                if (region && city.region !== region) return false;
+                if (department && city.departamento !== department) return false;
+                return true;
+            });
+            
+            filtered.forEach(city => {
+                selectedCities.add(city.nombre);
+            });
+            
+            displayFilterResults();
+            document.getElementById('download-selected-btn').disabled = selectedCities.size === 0;
+        }
+
+        // Inicializar
+        window.addEventListener('DOMContentLoaded', () => {
+            loadShowcase('costa');
+            loadShowcase('sierra');
+            loadShowcase('selva');
+            loadAllCities();
+        });
+    </script>
+</body>
+</html>
