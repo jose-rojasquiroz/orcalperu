@@ -270,43 +270,87 @@
         }
 
         .filter-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .filter-results::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .filter-results::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .filter-results::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        .filter-results::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
 
         .city-option {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+            padding: 0.6rem 0.8rem;
+            text-align: left;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            user-select: none;
         }
 
         .city-option:hover {
-            border-color: var(--color-text);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
+            background: rgba(44, 62, 80, 0.05);
         }
 
-        .city-option.selected {
+        .city-option-checkbox {
+            flex: 0 0 16px;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #d0d0d0;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .city-option.selected .city-option-checkbox {
             background: var(--color-text);
-            color: white;
             border-color: var(--color-text);
         }
 
-        .city-option.selected .city-option-name {
+        .city-option.selected .city-option-checkbox::after {
+            content: '✓';
             color: white;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .city-option-name {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 400;
             color: var(--color-text);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .city-option.selected .city-option-name {
+            font-weight: 500;
+            color: var(--color-text);
         }
 
         .filter-actions {
@@ -478,7 +522,7 @@
                 grid-template-columns: 1fr;
             }
             .filter-results {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                max-height: 300px;
             }
             .filter-actions {
                 flex-direction: column;
@@ -732,6 +776,7 @@
                 }
                 
                 option.innerHTML = `
+                    <div class="city-option-checkbox"></div>
                     <div class="city-option-name">${capitalizeFirstLetter(city.nombre)}</div>
                 `;
                 
