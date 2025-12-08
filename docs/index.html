@@ -124,12 +124,7 @@
             font-size: 1.3rem;
             font-weight: 700;
             color: var(--color-text);
-            margin-bottom: 0.25rem;
-        }
-
-        .showcase-location {
-            font-size: 0.8rem;
-            color: var(--color-text-light);
+            margin-bottom: 0;
         }
 
         /* Grid layout: Mapa izquierda (grande), Polar y Stats derecha (stacked) */
@@ -599,6 +594,12 @@
         let allCities = [];
         let selectedCities = new Set();
 
+        // Función para capitalizar solo la primera letra
+        function capitalizeFirstLetter(str) {
+            if (!str) return '';
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        }
+
         // Función para formatear números
         function formatNumber(num) {
             if (num >= 1000000) {
@@ -619,8 +620,7 @@
             
             card.innerHTML = `
                 <div class="showcase-header">
-                    <div class="showcase-name">${city.nombre}</div>
-                    <div class="showcase-location">${city.provincia || 'N/A'}, ${city.departamento || 'N/A'}</div>
+                    <div class="showcase-name">${capitalizeFirstLetter(city.nombre)}</div>
                 </div>
                 <div class="showcase-content">
                     <div class="showcase-map">
@@ -732,7 +732,7 @@
                 }
                 
                 option.innerHTML = `
-                    <div class="city-option-name">${city.nombre}</div>
+                    <div class="city-option-name">${capitalizeFirstLetter(city.nombre)}</div>
                 `;
                 
                 option.onclick = () => toggleSelection(city.nombre, option);
