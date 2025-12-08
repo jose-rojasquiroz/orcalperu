@@ -3,11 +3,17 @@ import pandas as pd
 import numpy as np
 import osmnx as ox
 import matplotlib.pyplot as plt
+import matplotlib
 import json
 from pathlib import Path
 from shapely.geometry import box, LineString
 import warnings
 warnings.filterwarnings('ignore')
+
+# Configurar matplotlib para usar fuente LaTeX
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['STIX Two Text', 'Times New Roman', 'DejaVu Serif']
+plt.rcParams['text.usetex'] = False  # Usar fuentes del sistema en lugar de LaTeX
 
 # ============================================================================
 # CONFIGURACIÓN
@@ -220,6 +226,115 @@ Densidad: {city_data['densidad']:.0f} hab/km²"""
     
     print(f"  ✓ Ficha guardada: {output_path.name}")
 
+def calculate_bearing_std(bearings):
+    """
+    Calcula la desviación estándar circular de los bearings.
+    Usa la fórmula de desviación estándar circular:
+    sigma = sqrt(-2 * ln(R)) donde R es la resultante media
+    """
+    if not bearings or len(bearings) == 0:
+        return 0
+    
+    bearings_rad = np.deg2rad(bearings)
+    sin_sum = np.sum(np.sin(bearings_rad))
+    cos_sum = np.sum(np.cos(bearings_rad))
+    R = np.sqrt(sin_sum**2 + cos_sum**2) / len(bearings)
+    
+    if R >= 1.0:
+        return 0
+    
+    sigma = np.sqrt(-2 * np.log(R))
+    return np.rad2deg(sigma)
+
+def create_scatter_plots(all_city_data, exclude_lima=False):
+    """Crea gráficos de dispersión: segmentos vs desv.est y área vs desv.est
+    
+    Args:
+        all_city_data: Lista de datos de ciudades
+        exclude_lima: Si True, excluye Lima Metropolitana de los gráficos
+    """
+    
+    # Extraer datos
+    cities_df = pd.DataFrame(all_city_data)
+    
+    # Excluir Lima si se indica
+    if exclude_lima:
+        cities_df = cities_df[cities_df['nombre'].str.upper() != 'LIMA METROPOLITANA']
+    
+    cities_df['bearing_std'] = cities_df['bearings'].apply(calculate_bearing_std)
+    
+    # Mapear región a color
+    color_map = {'Costa': '#c7cb52', 'Sierra': '#98692e', 'Selva': '#62a162'}
+    cities_df['color'] = cities_df['region'].map(color_map)
+    
+    # Normalizar población para tamaño de puntos (rango: 20 a 500)
+    min_pop = cities_df['poblacion'].min()
+    max_pop = cities_df['poblacion'].max()
+    cities_df['marker_size'] = 20 + (cities_df['poblacion'] - min_pop) / (max_pop - min_pop) * 480
+    
+    # Definir sufijo del archivo según si excluye Lima
+    suffix = '_sin_lima' if exclude_lima else ''
+    graph_num = '3' if exclude_lima else '1'
+    
+    # GRÁFICO 1/3: Segmentos vs Desviación Estándar
+    fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
+    
+    for region in ['Costa', 'Sierra', 'Selva']:
+        subset = cities_df[cities_df['region'] == region]
+        ax.scatter(subset['num_segmentos'], subset['bearing_std'], 
+                  s=subset['marker_size'], alpha=0.6, 
+                  color=color_map[region], edgecolors='none',
+                  label=region)
+    
+    ax.set_xlabel('Número de segmentos de calles', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
+    ax.set_title('Orden en calles vs Número de segmentos', fontsize=16, fontweight='bold', pad=20)
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
+    
+    # Anotar ciudades principales
+    for _, row in cities_df.iterrows():
+        if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
+            ax.annotate(row['nombre'].split()[0], 
+                       (row['num_segmentos'], row['bearing_std']),
+                       fontsize=8, alpha=0.7, xytext=(5, 5), 
+                       textcoords='offset points')
+    
+    plt.tight_layout()
+    plt.savefig(OUTPUT_DIR / 'graficos' / f'dispersion_{graph_num}.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"  ✓ Gráfico guardado: dispersion_{graph_num}.png")
+    
+    # GRÁFICO 2/4: Área vs Desviación Estándar
+    graph_num_2 = '4' if exclude_lima else '2'
+    fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
+    
+    for region in ['Costa', 'Sierra', 'Selva']:
+        subset = cities_df[cities_df['region'] == region]
+        ax.scatter(subset['area_km2'], subset['bearing_std'], 
+                  s=subset['marker_size'], alpha=0.6, 
+                  color=color_map[region], edgecolors='none',
+                  label=region)
+    
+    ax.set_xlabel('Área urbana (km²)', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
+    ax.set_title('Orden en calles vs Área urbana', fontsize=16, fontweight='bold', pad=20)
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
+    
+    # Anotar ciudades principales
+    for _, row in cities_df.iterrows():
+        if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
+            ax.annotate(row['nombre'].split()[0], 
+                       (row['area_km2'], row['bearing_std']),
+                       fontsize=8, alpha=0.7, xytext=(5, 5), 
+                       textcoords='offset points')
+    
+    plt.tight_layout()
+    plt.savefig(OUTPUT_DIR / 'graficos' / f'dispersion_{graph_num_2}.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"  ✓ Gráfico guardado: dispersion_{graph_num_2}.png")
+
 def process_city(idx, city_row, gdf_cities, map_extent, is_top3=False):
     """Procesa una ciudad individual. is_top3 define si se guardan mapa/gráfico individuales."""
     city_name = city_row['CIUDAD']
@@ -383,10 +498,75 @@ def add_scale_bar(ax, map_extent, base_crs):
 # SCRIPT PRINCIPAL
 # ============================================================================
 
+def show_menu():
+    """Muestra un menú interactivo para elegir qué procesar"""
+    print("\n" + "="*70)
+    print("MENÚ DE OPCIONES - ¿QUÉ DESEAS PROCESAR?")
+    print("="*70)
+    print("\n1. Análisis completo (mapas, gráficos polares, fichas, gráficos dispersión)")
+    print("   ⏱️  Tiempo estimado: 15-30 minutos (depende de conexión a OSM)")
+    print("\n2. Solo gráficos de dispersión (rápido)")
+    print("   ⏱️  Tiempo estimado: < 1 minuto")
+    print("\n" + "="*70)
+    
+    while True:
+        try:
+            choice = input("\n¿Qué opción deseas? (1 o 2): ").strip()
+            if choice in ['1', '2']:
+                return int(choice)
+            else:
+                print("❌ Por favor, ingresa 1 o 2")
+        except KeyboardInterrupt:
+            print("\n\n⚠️  Operación cancelada por el usuario")
+            exit(0)
+        except Exception as e:
+            print(f"❌ Error: {e}")
+
 def main():
     print("="*70)
     print("PRE-PROCESAMIENTO DE DATOS - CIUDADES DEL PERÚ")
     print("="*70)
+    
+    # Mostrar menú
+    choice = show_menu()
+    
+    if choice == 2:
+        # Solo gráficos de dispersión - cargar datos existentes
+        print("\n[1/2] Cargando datos previos...")
+        try:
+            with open(OUTPUT_DIR / 'data' / 'ciudades.json', 'r', encoding='utf-8') as f:
+                all_city_data = json.load(f)
+            print(f"  ✓ {len(all_city_data)} ciudades cargadas desde ciudades.json")
+        except FileNotFoundError:
+            print("  ✗ Error: No se encontró ciudades.json")
+            print("  ℹ️  Ejecuta primero la opción 1 (análisis completo)")
+            return
+        except Exception as e:
+            print(f"  ✗ Error cargando datos: {e}")
+            return
+        
+        # Crear gráficos de dispersión
+        print("\n[2/2] Creando gráficos de dispersión...")
+        try:
+            create_scatter_plots(all_city_data, exclude_lima=False)
+            create_scatter_plots(all_city_data, exclude_lima=True)
+            print("  ✓ Todos los gráficos de dispersión creados")
+        except Exception as e:
+            print(f"  ✗ Error creando gráficos de dispersión: {e}")
+            return
+        
+        # Resumen
+        print("\n" + "="*70)
+        print("✓ GRÁFICOS DE DISPERSIÓN COMPLETADOS")
+        print("="*70)
+        print(f"\nGráficos generados:")
+        print(f"  - dispersion_1.png (segmentos vs orden)")
+        print(f"  - dispersion_2.png (área vs orden)")
+        print(f"  - dispersion_3.png (segmentos vs orden, sin Lima)")
+        print(f"  - dispersion_4.png (área vs orden, sin Lima)")
+        return
+    
+    # OPCIÓN 1: Análisis completo
     
     # 1. Cargar datos
     print("\n[1/5] Cargando datos del GeoPackage...")
@@ -403,7 +583,13 @@ def main():
     # 2b. Seleccionar top 3 por región (excluyendo Lima Metropolitana) para mapas/gráficos individuales
     gdf_top3 = select_top_cities(gdf_cities)
     top3_names = set(gdf_top3['CIUDAD'])
-    print(f"  ✓ Seleccionadas {len(gdf_top3)} ciudades (top 3 por región, sin Lima Metropolitana)")
+    
+    # Agregar Lima Metropolitana a las ciudades que tendrán gráficos/mapas individuales
+    lima_cities = gdf_cities[gdf_cities['CIUDAD'].str.upper() == 'LIMA METROPOLITANA']
+    if not lima_cities.empty:
+        top3_names.add(lima_cities.iloc[0]['CIUDAD'])
+    
+    print(f"  ✓ Seleccionadas {len(top3_names)} ciudades para gráficos/mapas individuales (top 3 por región + Lima)")
 
     # 2c. Asignar grupos de escala por población (4 grupos, grupo 1 = ciudades más grandes)
     gdf_cities = assign_scale_group(gdf_cities)
@@ -436,6 +622,15 @@ def main():
             all_graphs.append((city_data['nombre'], graph))
     
     print(f"\n  ✓ {len(all_city_data)} ciudades procesadas exitosamente")
+    
+    # 3b. Crear gráficos de dispersión (con y sin Lima)
+    print("\n[3b/5] Creando gráficos de dispersión...")
+    try:
+        create_scatter_plots(all_city_data, exclude_lima=False)
+        create_scatter_plots(all_city_data, exclude_lima=True)
+        print("  ✓ Todos los gráficos de dispersión creados (con y sin Lima Metropolitana)")
+    except Exception as e:
+        print(f"  ✗ Error creando gráficos de dispersión: {e}")
     
     # 4. Guardar datos JSON
     print("\n[4/5] Guardando datos JSON...")
