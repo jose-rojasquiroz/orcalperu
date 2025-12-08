@@ -58,6 +58,7 @@
             max-width: 800px;
             margin-bottom: 2rem;
             line-height: 1.8;
+            text-align: justify;
         }
 
         /* NARRATIVE SECTION */
@@ -131,6 +132,14 @@
             flex: 1 1 auto;
             display: flex;
             flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        /* Contenedor doble para Sierra y Selva */
+        .dual-showcase {
+            flex: 1 1 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 2.5rem;
         }
 
@@ -582,6 +591,9 @@
             .download-btn, .select-all-btn, .clear-btn {
                 width: 100%;
             }
+            .dual-showcase {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* LOADING STATE */
@@ -596,7 +608,7 @@
     <section class="hero">
         <h1>Orientación de calles en las principales ciudades del Perú</h1>
         <p>
-            ¿Les ha pasado que, habiendo crecido en una ciudad intermedia, tener que visitar Lima les supone un problema para orientarse en la ciudad? Pues, parece, no es porque tengan(mos) mal sentido de la ubicación, sino que realmente Lima tiene una distribución, por decirlo menos, caótica. 
+            ¿Les ha pasado que, habiendo crecido en una ciudad intermedia, tener que visitar Lima les supone un problema para orientarse en la ciudad?  
 Los gráficos que verán a continuación representan la orientación de las calles en las tres ciudades más grandes de la costa, sierra y selva del Perú. En cada uno, la dirección de las barras indica su orientación, mientras que la longitud muestra qué tan frecuente es esa orientación en la ciudad. 
 La revisión de estos patrones puede darnos luces sobre los procesos históricos del desarrollo de las ciudades, las culturas que allí se han asentado a lo largo del tiempo o las condiciones socioeconómicas locales que les han dado forma, pero también sobre cómo gestionarlas y planificarlas de cara al futuro. Por poner un ejemplo: ¿En donde creen que será más sencillo montar una red de transporte público eficiente? ¿En una ciudad con muchos o pocos cambios de dirección? 
         </p>
@@ -608,9 +620,9 @@ La revisión de estos patrones puede darnos luces sobre los procesos históricos
         <section id="costa" class="narrative-section region-costa">
             <div class="narrative-text">
                 <p>
-                    Mi primera impresión al ver la distribución de Trujillo es: ¡caos! Un poco de todo por todos lados. 
+                    Mi primera impresión al ver la distribución de Trujillo es la de variedad. Muchas direcciones diferentes en distintas zonas. 
                     Sin embargo, al ver otras ciudades de la <span class="word-costa">costa</span> con un poco menos de población el panorama cambia. 
-                    De hecho, en la mayoría de ciudades intermedias de esta zona del país los histogramas parecen mostrar una distribución ordenada de sus calles.
+                    De hecho, en la mayoría de ciudades intermedias de esta zona del país los histogramas parecen mostrar una distribución más ordenada, menos heterogénea, de sus calles.
                 </p>
             </div>
             <div class="cities-showcase" id="showcase-costa"></div>
@@ -618,22 +630,24 @@ La revisión de estos patrones puede darnos luces sobre los procesos históricos
 
         <!-- SIERRA Y SELVA SECTION -->
         <section id="sierra-selva" class="narrative-section region-sierra">
-            <div class="cities-showcase" id="showcase-sierra"></div>
             <div class="narrative-text">
                 <p>
                     En las ciudades de la <span class="word-sierra">sierra</span> y de la <span class="word-selva">selva</span> paso algo parecido: cuando revisamos las ciudades más grandes el gráfico polar toma muchas direcciones, pero a medida que se revisan ciudades más pequeñas, las calles parecen estar más ordenadas. 
                     De hecho me llamó la atención lo ordenadas que son las calles en Cusco y Huancayo, ciudades que, por tener una topografía bastante más marcada que las de la <span class="word-costa">costa</span> habría esperado que muestren una distribución más variada. 
-                    Por supuesto esto es una sobresimplificación producto de una revisión masiva. Seguramente si se revisaran barrios dentro de las ciudades se van a encontrar patrones muy variados. Pero como primera aproximación me parece interesante.
+                    Por supuesto esto es una sobresimplificación producto de una revisión masiva, pero como primera aproximación me parece interesante.
                 </p>
             </div>
-            <div class="cities-showcase" id="showcase-selva"></div>
+            <div class="dual-showcase">
+                <div class="cities-showcase" id="showcase-sierra"></div>
+                <div class="cities-showcase" id="showcase-selva"></div>
+            </div>
         </section>
 
         <!-- ANÁLISIS COMPARATIVO SECTION -->
         <section id="analisis-comparativo" class="narrative-section">
             <div class="narrative-text">
                 <p>
-                    De hecho, al revisar la relación entre cuánto varía la orientación de las calles con el área urbana de las ciudades, se puede ver claramente que hay una correlación positiva: a más tamaño, más "desordenada" es la red de calles. 
+                    De hecho, al revisar la relación entre cuánto varía la orientación de las calles con el área urbana de las ciudades, se puede ver claramente que hay una correlación positiva: a más tamaño, más diversa (y, por tanto, más "desordenada") es la red de calles. 
                 </p>
             </div>
             <div class="comparative-chart">
@@ -645,10 +659,17 @@ La revisión de estos patrones puede darnos luces sobre los procesos históricos
         <section id="lima" class="narrative-section">
             <div class="narrative-text">
                 <p>
-                    Y Lima metropolitana y Callao, la más grande y poblada del país así lo demuestra.
+                    Y Lima metropolitana y Callao, la más grande y poblada del país, así lo demuestra.
                 </p>
             </div>
             <div class="cities-showcase" id="showcase-lima"></div>
+        </section>
+
+        <!-- CLOSING TEXT SECTION -->
+        <section class="hero closing-section">
+            <p>
+                Mirar la trama vial de cada ciudad desde su orientación nos recuerda que la infraestructura también cuenta historias: decisiones políticas, procesos de urbanización acelerada, límites ambientales y hasta preferencias culturales. Ojalá estos patrones inspiren más debates sobre cómo crecer mejor y cómo conectar mejor a las personas que viven en cada lugar.
+            </p>
         </section>
     </div>
 
@@ -691,7 +712,7 @@ La revisión de estos patrones puede darnos luces sobre los procesos históricos
         <p>Elaborado por <a href="https://jose-rojasquiroz.github.io/" target="_blank">José Rojas-Quiroz</a></p>
         <p>Datos: INEI 2017, OpenStreetMap y OSMNx</p>
         <div class="footer-links">
-            <a href="https://github.com/jose-rojasquiroz/peru_sno/raw/refs/heads/main/data/pu-principalesciudades-WGS84.gpkg?download=" class="footer-link-btn" download> Descargar GeoPackage</a>
+            <a href="https://github.com/jose-rojasquiroz/orcalperu/raw/refs/heads/main/docs/data/peru_sno.gpkg?download=" class="footer-link-btn" download> Descargar GeoPackage</a>
             <a href="https://github.com/jose-rojasquiroz/orcalperu" target="_blank" class="footer-link-btn"> Ver repositorio GitHub</a>
         </div>
     </footer>
