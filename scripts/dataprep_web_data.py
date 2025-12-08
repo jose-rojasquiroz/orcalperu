@@ -272,61 +272,50 @@ def create_scatter_plots(all_city_data, exclude_lima=False):
     max_pop = cities_df['poblacion'].max()
     cities_df['marker_size'] = 20 + (cities_df['poblacion'] - min_pop) / (max_pop - min_pop) * 480
     
+    # Identificar ciudades a etiquetar: top 5 Costa, top 3 Sierra, top 3 Selva
+    cities_to_label = set()
+    
+    # Top 5 de la Costa
+    costa_cities = cities_df[cities_df['region'] == 'Costa'].nlargest(5, 'poblacion')
+    cities_to_label.update(costa_cities['nombre'].tolist())
+    
+    # Top 3 de la Sierra
+    sierra_cities = cities_df[cities_df['region'] == 'Sierra'].nlargest(3, 'poblacion')
+    cities_to_label.update(sierra_cities['nombre'].tolist())
+    
+    # Top 3 de la Selva
+    selva_cities = cities_df[cities_df['region'] == 'Selva'].nlargest(3, 'poblacion')
+    cities_to_label.update(selva_cities['nombre'].tolist())
+    
     if exclude_lima:
-        # DISPERSION_3.PNG: Layout de ficha (24.16cm x 19.05cm)
-        width_cm = 24.16
-        height_cm = 19.05
-        dpi = 600
-        fig = plt.figure(figsize=(width_cm/2.54, height_cm/2.54), dpi=dpi)
-        fig.patch.set_facecolor('white')
-        
-        # Proporciones (en fracción de figura)
-        text_w = 0.40  # Texto Lorem a la izquierda
-        graph_w = 0.60  # Gráfico a la derecha
-        margin = 0.05
-        
-        # TEXTO LOREM IPSUM (izquierda)
-        ax_text = fig.add_axes([margin, margin, text_w - margin*1.5, 1 - margin*2])
-        ax_text.axis('off')
-        
-        lorem_text = """Análisis comparativo de la orientación de calles en las principales ciudades del Perú.
-
-En esta visualización se presenta la relación entre el número de segmentos de calles y la desviación estándar de orientación, una métrica que captura el grado de orden en la estructura vial urbana.
-
-Un valor bajo de desviación estándar indica una mayor orientación preferida (mayor orden), mientras que valores altos sugieren mayor diversidad en las direcciones de las calles."""
-        
-        ax_text.text(0.05, 0.95, lorem_text, fontsize=9, ha='left', va='top',
-                    transform=ax_text.transAxes, wrap=True, family='serif',
-                    linespacing=1.6, color='#2c3e50')
-        
-        # GRÁFICO (derecha): Segmentos vs Desviación Estándar
-        ax_scatter = fig.add_axes([text_w + margin*0.5, margin, graph_w - margin*2, 1 - margin*2])
+        # DISPERSION_3.PNG: Sin Lima Metropolitana (tamaño estándar)
+        fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
         
         for region in ['Costa', 'Sierra', 'Selva']:
             subset = cities_df[cities_df['region'] == region]
-            ax_scatter.scatter(subset['num_segmentos'], subset['bearing_std'], 
+            ax.scatter(subset['num_segmentos'], subset['bearing_std'], 
                       s=subset['marker_size'], alpha=0.6, 
                       color=color_map[region], edgecolors='none',
                       label=region)
         
-        ax_scatter.set_xlabel('Número de segmentos', fontsize=11, fontweight='bold')
-        ax_scatter.set_ylabel('Desviación estándar (°)', fontsize=11, fontweight='bold')
-        ax_scatter.grid(True, alpha=0.3, linestyle='--')
-        ax_scatter.legend(fontsize=10, title='Región', title_fontsize=11, 
-                         loc='upper right', framealpha=0.95)
+        ax.set_xlabel('Número de segmentos de calles', fontsize=14, fontweight='bold')
+        ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
+        ax.set_title('Orden en calles vs Número de segmentos (sin Lima)', fontsize=16, fontweight='bold', pad=20)
+        ax.grid(True, alpha=0.3, linestyle='--')
+        ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
         
-        # Anotar ciudades principales
+        # Anotar ciudades seleccionadas (top 5 Costa, top 3 Sierra, top 3 Selva)
         for _, row in cities_df.iterrows():
-            if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
-                ax_scatter.annotate(row['nombre'].split()[0], 
+            if row['nombre'] in cities_to_label:
+                ax.annotate(row['nombre'].split()[0], 
                            (row['num_segmentos'], row['bearing_std']),
-                           fontsize=7, alpha=0.7, xytext=(3, 3), 
+                           fontsize=8, alpha=0.7, xytext=(5, 5), 
                            textcoords='offset points')
         
-        plt.savefig(OUTPUT_DIR / 'graficos' / 'dispersion_3.png', dpi=dpi, bbox_inches='tight', 
-                   facecolor='white')
+        plt.tight_layout()
+        plt.savefig(OUTPUT_DIR / 'graficos' / 'dispersion_3.png', dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"  ✓ Gráfico guardado: dispersion_3.png (ficha layout 24.16cm x 19.05cm)")
+        print(f"  ✓ Gráfico guardado: dispersion_3.png")
         
     else:
         # GRÁFICO 1: Segmentos vs Desviación Estándar (tamaño estándar)
@@ -345,9 +334,9 @@ Un valor bajo de desviación estándar indica una mayor orientación preferida (
         ax.grid(True, alpha=0.3, linestyle='--')
         ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
         
-        # Anotar ciudades principales
+        # Anotar ciudades seleccionadas (top 5 Costa, top 3 Sierra, top 3 Selva)
         for _, row in cities_df.iterrows():
-            if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
+            if row['nombre'] in cities_to_label:
                 ax.annotate(row['nombre'].split()[0], 
                            (row['num_segmentos'], row['bearing_std']),
                            fontsize=8, alpha=0.7, xytext=(5, 5), 
@@ -374,9 +363,9 @@ Un valor bajo de desviación estándar indica una mayor orientación preferida (
         ax.grid(True, alpha=0.3, linestyle='--')
         ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
         
-        # Anotar ciudades principales
+        # Anotar ciudades seleccionadas (top 5 Costa, top 3 Sierra, top 3 Selva)
         for _, row in cities_df.iterrows():
-            if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
+            if row['nombre'] in cities_to_label:
                 ax.annotate(row['nombre'].split()[0], 
                            (row['area_km2'], row['bearing_std']),
                            fontsize=8, alpha=0.7, xytext=(5, 5), 
@@ -440,31 +429,18 @@ def process_city(idx, city_row, gdf_cities, map_extent, is_top3=False,
 
 
 def select_top_cities(gdf):
-    """Selecciona ciudades específicas por región:
-    - Costa: Trujillo, Chiclayo, Piura
-    - Sierra y Selva: Top 3 por población
+    """Selecciona las 3 ciudades más pobladas por región, excluyendo Lima Metropolitana.
+    Lima Metropolitana se maneja por separado.
     """
-    # Ciudades específicas para Costa (en orden)
-    costa_cities = ['TRUJILLO', 'CHICLAYO', 'PIURA']
-    
     top_cities = []
     
-    # Costa: usar ciudades especificadas
-    costa_gdf = gdf[gdf['REGNAT'] == 'Costa']
-    costa_filtered = costa_gdf[costa_gdf['CIUDAD'].str.upper().isin(costa_cities)]
-    # Ordenar según el orden especificado
-    costa_filtered = costa_filtered.copy()
-    costa_filtered['order'] = costa_filtered['CIUDAD'].str.upper().apply(lambda x: costa_cities.index(x) if x in costa_cities else 999)
-    costa_filtered = costa_filtered.sort_values('order').drop('order', axis=1)
-    top_cities.append(costa_filtered)
-    
-    # Sierra: top 3 por población
-    sierra_gdf = gdf[gdf['REGNAT'] == 'Sierra']
-    top_cities.append(sierra_gdf.nlargest(3, 'POB17'))
-    
-    # Selva: top 3 por población
-    selva_gdf = gdf[gdf['REGNAT'] == 'Selva']
-    top_cities.append(selva_gdf.nlargest(3, 'POB17'))
+    # Para cada región: excluir Lima Metropolitana y tomar top 3 por población
+    for region in ['Costa', 'Sierra', 'Selva']:
+        region_gdf = gdf[gdf['REGNAT'] == region]
+        # Excluir Lima Metropolitana
+        region_gdf = region_gdf[region_gdf['CIUDAD'].str.upper() != 'LIMA METROPOLITANA']
+        # Obtener las 3 más pobladas
+        top_cities.append(region_gdf.nlargest(3, 'POB17'))
     
     return pd.concat(top_cities)
 
@@ -736,6 +712,8 @@ def main():
 
         for region in ['Costa', 'Sierra', 'Selva']:
             region_data = [c for c in all_city_data if c['region'] == region]
+            # Excluir Lima Metropolitana de las regiones
+            region_data = [c for c in region_data if c['nombre'].upper() != 'LIMA METROPOLITANA']
             region_data.sort(key=lambda x: x['poblacion'], reverse=True)
             top_3 = region_data[:3]
             with open(OUTPUT_DIR / 'data' / f'{region.lower()}_top3.json', 'w', encoding='utf-8') as f:
