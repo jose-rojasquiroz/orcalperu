@@ -247,11 +247,11 @@ def calculate_bearing_std(bearings):
     return np.rad2deg(sigma)
 
 def create_scatter_plots(all_city_data, exclude_lima=False):
-    """Crea gráficos de dispersión: segmentos vs desv.est y área vs desv.est
+    """Crea gráficos de dispersión con layout de ficha (24.16cm x 19.05cm)
     
     Args:
         all_city_data: Lista de datos de ciudades
-        exclude_lima: Si True, excluye Lima Metropolitana de los gráficos
+        exclude_lima: Si True, excluye Lima Metropolitana y crea dispersion_3.png con layout de ficha
     """
     
     # Extraer datos
@@ -272,71 +272,124 @@ def create_scatter_plots(all_city_data, exclude_lima=False):
     max_pop = cities_df['poblacion'].max()
     cities_df['marker_size'] = 20 + (cities_df['poblacion'] - min_pop) / (max_pop - min_pop) * 480
     
-    # Definir sufijo del archivo según si excluye Lima
-    suffix = '_sin_lima' if exclude_lima else ''
-    graph_num = '3' if exclude_lima else '1'
-    
-    # GRÁFICO 1/3: Segmentos vs Desviación Estándar
-    fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
-    
-    for region in ['Costa', 'Sierra', 'Selva']:
-        subset = cities_df[cities_df['region'] == region]
-        ax.scatter(subset['num_segmentos'], subset['bearing_std'], 
-                  s=subset['marker_size'], alpha=0.6, 
-                  color=color_map[region], edgecolors='none',
-                  label=region)
-    
-    ax.set_xlabel('Número de segmentos de calles', fontsize=14, fontweight='bold')
-    ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
-    ax.set_title('Orden en calles vs Número de segmentos', fontsize=16, fontweight='bold', pad=20)
-    ax.grid(True, alpha=0.3, linestyle='--')
-    ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
-    
-    # Anotar ciudades principales
-    for _, row in cities_df.iterrows():
-        if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
-            ax.annotate(row['nombre'].split()[0], 
-                       (row['num_segmentos'], row['bearing_std']),
-                       fontsize=8, alpha=0.7, xytext=(5, 5), 
-                       textcoords='offset points')
-    
-    plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / 'graficos' / f'dispersion_{graph_num}.png', dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"  ✓ Gráfico guardado: dispersion_{graph_num}.png")
-    
-    # GRÁFICO 2/4: Área vs Desviación Estándar
-    graph_num_2 = '4' if exclude_lima else '2'
-    fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
-    
-    for region in ['Costa', 'Sierra', 'Selva']:
-        subset = cities_df[cities_df['region'] == region]
-        ax.scatter(subset['area_km2'], subset['bearing_std'], 
-                  s=subset['marker_size'], alpha=0.6, 
-                  color=color_map[region], edgecolors='none',
-                  label=region)
-    
-    ax.set_xlabel('Área urbana (km²)', fontsize=14, fontweight='bold')
-    ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
-    ax.set_title('Orden en calles vs Área urbana', fontsize=16, fontweight='bold', pad=20)
-    ax.grid(True, alpha=0.3, linestyle='--')
-    ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
-    
-    # Anotar ciudades principales
-    for _, row in cities_df.iterrows():
-        if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
-            ax.annotate(row['nombre'].split()[0], 
-                       (row['area_km2'], row['bearing_std']),
-                       fontsize=8, alpha=0.7, xytext=(5, 5), 
-                       textcoords='offset points')
-    
-    plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / 'graficos' / f'dispersion_{graph_num_2}.png', dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"  ✓ Gráfico guardado: dispersion_{graph_num_2}.png")
+    if exclude_lima:
+        # DISPERSION_3.PNG: Layout de ficha (24.16cm x 19.05cm)
+        width_cm = 24.16
+        height_cm = 19.05
+        dpi = 600
+        fig = plt.figure(figsize=(width_cm/2.54, height_cm/2.54), dpi=dpi)
+        fig.patch.set_facecolor('white')
+        
+        # Proporciones (en fracción de figura)
+        text_w = 0.40  # Texto Lorem a la izquierda
+        graph_w = 0.60  # Gráfico a la derecha
+        margin = 0.05
+        
+        # TEXTO LOREM IPSUM (izquierda)
+        ax_text = fig.add_axes([margin, margin, text_w - margin*1.5, 1 - margin*2])
+        ax_text.axis('off')
+        
+        lorem_text = """Análisis comparativo de la orientación de calles en las principales ciudades del Perú.
 
-def process_city(idx, city_row, gdf_cities, map_extent, is_top3=False):
-    """Procesa una ciudad individual. is_top3 define si se guardan mapa/gráfico individuales."""
+En esta visualización se presenta la relación entre el número de segmentos de calles y la desviación estándar de orientación, una métrica que captura el grado de orden en la estructura vial urbana.
+
+Un valor bajo de desviación estándar indica una mayor orientación preferida (mayor orden), mientras que valores altos sugieren mayor diversidad en las direcciones de las calles."""
+        
+        ax_text.text(0.05, 0.95, lorem_text, fontsize=9, ha='left', va='top',
+                    transform=ax_text.transAxes, wrap=True, family='serif',
+                    linespacing=1.6, color='#2c3e50')
+        
+        # GRÁFICO (derecha): Segmentos vs Desviación Estándar
+        ax_scatter = fig.add_axes([text_w + margin*0.5, margin, graph_w - margin*2, 1 - margin*2])
+        
+        for region in ['Costa', 'Sierra', 'Selva']:
+            subset = cities_df[cities_df['region'] == region]
+            ax_scatter.scatter(subset['num_segmentos'], subset['bearing_std'], 
+                      s=subset['marker_size'], alpha=0.6, 
+                      color=color_map[region], edgecolors='none',
+                      label=region)
+        
+        ax_scatter.set_xlabel('Número de segmentos', fontsize=11, fontweight='bold')
+        ax_scatter.set_ylabel('Desviación estándar (°)', fontsize=11, fontweight='bold')
+        ax_scatter.grid(True, alpha=0.3, linestyle='--')
+        ax_scatter.legend(fontsize=10, title='Región', title_fontsize=11, 
+                         loc='upper right', framealpha=0.95)
+        
+        # Anotar ciudades principales
+        for _, row in cities_df.iterrows():
+            if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
+                ax_scatter.annotate(row['nombre'].split()[0], 
+                           (row['num_segmentos'], row['bearing_std']),
+                           fontsize=7, alpha=0.7, xytext=(3, 3), 
+                           textcoords='offset points')
+        
+        plt.savefig(OUTPUT_DIR / 'graficos' / 'dispersion_3.png', dpi=dpi, bbox_inches='tight', 
+                   facecolor='white')
+        plt.close()
+        print(f"  ✓ Gráfico guardado: dispersion_3.png (ficha layout 24.16cm x 19.05cm)")
+        
+    else:
+        # GRÁFICO 1: Segmentos vs Desviación Estándar (tamaño estándar)
+        fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
+        
+        for region in ['Costa', 'Sierra', 'Selva']:
+            subset = cities_df[cities_df['region'] == region]
+            ax.scatter(subset['num_segmentos'], subset['bearing_std'], 
+                      s=subset['marker_size'], alpha=0.6, 
+                      color=color_map[region], edgecolors='none',
+                      label=region)
+        
+        ax.set_xlabel('Número de segmentos de calles', fontsize=14, fontweight='bold')
+        ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
+        ax.set_title('Orden en calles vs Número de segmentos', fontsize=16, fontweight='bold', pad=20)
+        ax.grid(True, alpha=0.3, linestyle='--')
+        ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
+        
+        # Anotar ciudades principales
+        for _, row in cities_df.iterrows():
+            if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
+                ax.annotate(row['nombre'].split()[0], 
+                           (row['num_segmentos'], row['bearing_std']),
+                           fontsize=8, alpha=0.7, xytext=(5, 5), 
+                           textcoords='offset points')
+        
+        plt.tight_layout()
+        plt.savefig(OUTPUT_DIR / 'graficos' / 'dispersion_1.png', dpi=300, bbox_inches='tight')
+        plt.close()
+        print(f"  ✓ Gráfico guardado: dispersion_1.png")
+        
+        # GRÁFICO 2: Área vs Desviación Estándar
+        fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
+        
+        for region in ['Costa', 'Sierra', 'Selva']:
+            subset = cities_df[cities_df['region'] == region]
+            ax.scatter(subset['area_km2'], subset['bearing_std'], 
+                      s=subset['marker_size'], alpha=0.6, 
+                      color=color_map[region], edgecolors='none',
+                      label=region)
+        
+        ax.set_xlabel('Área urbana (km²)', fontsize=14, fontweight='bold')
+        ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
+        ax.set_title('Orden en calles vs Área urbana', fontsize=16, fontweight='bold', pad=20)
+        ax.grid(True, alpha=0.3, linestyle='--')
+        ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
+        
+        # Anotar ciudades principales
+        for _, row in cities_df.iterrows():
+            if row['poblacion'] > cities_df['poblacion'].quantile(0.75):
+                ax.annotate(row['nombre'].split()[0], 
+                           (row['area_km2'], row['bearing_std']),
+                           fontsize=8, alpha=0.7, xytext=(5, 5), 
+                           textcoords='offset points')
+        
+        plt.tight_layout()
+        plt.savefig(OUTPUT_DIR / 'graficos' / 'dispersion_2.png', dpi=300, bbox_inches='tight')
+        plt.close()
+        print(f"  ✓ Gráfico guardado: dispersion_2.png")
+
+def process_city(idx, city_row, gdf_cities, map_extent, is_top3=False,
+                 run_maps=True, run_polar=True, run_fichas=True):
+    """Procesa una ciudad individual, generando solo los artefactos solicitados."""
     city_name = city_row['CIUDAD']
     city_polygon = city_row['geometry']
     region = city_row['REGNAT']
@@ -352,17 +405,20 @@ def process_city(idx, city_row, gdf_cities, map_extent, is_top3=False):
     
     mapa_path = None
     polar_path = None
+    ficha_path = None
 
-    # Solo guardar mapas/gráficos individuales para el top 3 por región (sin Lima Metropolitana)
-    if is_top3:
+    # Guardar mapas/gráficos individuales solo para top 3 por región (más Lima) si corresponde
+    if is_top3 and run_maps:
         mapa_path = OUTPUT_DIR / 'mapas' / f'{city_name.replace(" ", "_")}_mapa.png'
-        polar_path = OUTPUT_DIR / 'graficos' / f'{city_name.replace(" ", "_")}_polar.png'
         create_street_map(graph, city_name, region, mapa_path, map_extent)
+    if is_top3 and run_polar:
+        polar_path = OUTPUT_DIR / 'graficos' / f'{city_name.replace(" ", "_")}_polar.png'
         create_polar_plot(bearings, city_name, region, polar_path)
     
-    # Crear ficha completa (ahora incluye el mapa)
-    ficha_path = OUTPUT_DIR / 'fichas' / f'{city_name.replace(" ", "_")}_ficha.png'
-    create_ficha(city_row, bearings, graph, ficha_path, map_extent)
+    # Crear ficha completa si se solicita
+    if run_fichas:
+        ficha_path = OUTPUT_DIR / 'fichas' / f'{city_name.replace(" ", "_")}_ficha.png'
+        create_ficha(city_row, bearings, graph, ficha_path, map_extent)
     
     # Preparar datos para JSON
     city_data = {
@@ -377,19 +433,39 @@ def process_city(idx, city_row, gdf_cities, map_extent, is_top3=False):
         'num_segmentos': len(bearings),
         'mapa_calles': f'mapas/{city_name.replace(" ", "_")}_mapa.png' if mapa_path else None,
         'grafico_polar': f'graficos/{city_name.replace(" ", "_")}_polar.png' if polar_path else None,
-        'ficha': f'fichas/{city_name.replace(" ", "_")}_ficha.png'
+        'ficha': f'fichas/{city_name.replace(" ", "_")}_ficha.png' if ficha_path else None
     }
     
     return city_data, graph
 
 
 def select_top_cities(gdf):
-    """Selecciona top 3 ciudades por población por región (Costa, Sierra, Selva) excluyendo Lima Metropolitana."""
-    gdf_no_lima = gdf[gdf['CIUDAD'].str.upper() != 'LIMA METROPOLITANA']
+    """Selecciona ciudades específicas por región:
+    - Costa: Trujillo, Chiclayo, Piura
+    - Sierra y Selva: Top 3 por población
+    """
+    # Ciudades específicas para Costa (en orden)
+    costa_cities = ['TRUJILLO', 'CHICLAYO', 'PIURA']
+    
     top_cities = []
-    for region in ['Costa', 'Sierra', 'Selva']:
-        region_cities = gdf_no_lima[gdf_no_lima['REGNAT'] == region]
-        top_cities.append(region_cities.nlargest(3, 'POB17'))
+    
+    # Costa: usar ciudades especificadas
+    costa_gdf = gdf[gdf['REGNAT'] == 'Costa']
+    costa_filtered = costa_gdf[costa_gdf['CIUDAD'].str.upper().isin(costa_cities)]
+    # Ordenar según el orden especificado
+    costa_filtered = costa_filtered.copy()
+    costa_filtered['order'] = costa_filtered['CIUDAD'].str.upper().apply(lambda x: costa_cities.index(x) if x in costa_cities else 999)
+    costa_filtered = costa_filtered.sort_values('order').drop('order', axis=1)
+    top_cities.append(costa_filtered)
+    
+    # Sierra: top 3 por población
+    sierra_gdf = gdf[gdf['REGNAT'] == 'Sierra']
+    top_cities.append(sierra_gdf.nlargest(3, 'POB17'))
+    
+    # Selva: top 3 por población
+    selva_gdf = gdf[gdf['REGNAT'] == 'Selva']
+    top_cities.append(selva_gdf.nlargest(3, 'POB17'))
+    
     return pd.concat(top_cities)
 
 
@@ -499,23 +575,27 @@ def add_scale_bar(ax, map_extent, base_crs):
 # ============================================================================
 
 def show_menu():
-    """Muestra un menú interactivo para elegir qué procesar"""
+    """Muestra un menú interactivo para elegir qué procesar."""
     print("\n" + "="*70)
     print("MENÚ DE OPCIONES - ¿QUÉ DESEAS PROCESAR?")
     print("="*70)
-    print("\n1. Análisis completo (mapas, gráficos polares, fichas, gráficos dispersión)")
+    print("\n1. Análisis completo (mapas, polares, fichas, dispersión, data)")
     print("   ⏱️  Tiempo estimado: 15-30 minutos (depende de conexión a OSM)")
-    print("\n2. Solo gráficos de dispersión (rápido)")
-    print("   ⏱️  Tiempo estimado: < 1 minuto")
+    print("\n2. Solo mapas")
+    print("3. Solo gráficos polares")
+    print("4. Solo fichas")
+    print("5. Solo gráficos de dispersión (rápido, requiere ciudades.json)")
+    print("6. Data (JSON)")
+    print("7. Data (GeoPackage)")
     print("\n" + "="*70)
     
+    valid = {'1','2','3','4','5','6','7'}
     while True:
         try:
-            choice = input("\n¿Qué opción deseas? (1 o 2): ").strip()
-            if choice in ['1', '2']:
+            choice = input("\n¿Qué opción deseas? (1-7): ").strip()
+            if choice in valid:
                 return int(choice)
-            else:
-                print("❌ Por favor, ingresa 1 o 2")
+            print("❌ Por favor, ingresa un número entre 1 y 7")
         except KeyboardInterrupt:
             print("\n\n⚠️  Operación cancelada por el usuario")
             exit(0)
@@ -527,11 +607,29 @@ def main():
     print("PRE-PROCESAMIENTO DE DATOS - CIUDADES DEL PERÚ")
     print("="*70)
     
-    # Mostrar menú
+    # Mostrar menú y establecer flags de ejecución
     choice = show_menu()
-    
-    if choice == 2:
-        # Solo gráficos de dispersión - cargar datos existentes
+    run_maps = run_polar = run_fichas = run_dispersion = False
+    run_data_json = run_data_gpkg = False
+
+    if choice == 1:
+        run_maps = run_polar = run_fichas = run_dispersion = True
+        run_data_json = run_data_gpkg = True
+    elif choice == 2:
+        run_maps = True
+    elif choice == 3:
+        run_polar = True
+    elif choice == 4:
+        run_fichas = True
+    elif choice == 5:
+        run_dispersion = True
+    elif choice == 6:
+        run_data_json = True
+    elif choice == 7:
+        run_data_gpkg = True
+
+    # Ruta rápida: solo gráficos de dispersión con datos existentes
+    if run_dispersion and not any([run_maps, run_polar, run_fichas, run_data_json, run_data_gpkg]):
         print("\n[1/2] Cargando datos previos...")
         try:
             with open(OUTPUT_DIR / 'data' / 'ciudades.json', 'r', encoding='utf-8') as f:
@@ -539,13 +637,12 @@ def main():
             print(f"  ✓ {len(all_city_data)} ciudades cargadas desde ciudades.json")
         except FileNotFoundError:
             print("  ✗ Error: No se encontró ciudades.json")
-            print("  ℹ️  Ejecuta primero la opción 1 (análisis completo)")
+            print("  ℹ️  Ejecuta primero la opción 1 (análisis completo) o 6 (solo data)")
             return
         except Exception as e:
             print(f"  ✗ Error cargando datos: {e}")
             return
         
-        # Crear gráficos de dispersión
         print("\n[2/2] Creando gráficos de dispersión...")
         try:
             create_scatter_plots(all_city_data, exclude_lima=False)
@@ -555,7 +652,6 @@ def main():
             print(f"  ✗ Error creando gráficos de dispersión: {e}")
             return
         
-        # Resumen
         print("\n" + "="*70)
         print("✓ GRÁFICOS DE DISPERSIÓN COMPLETADOS")
         print("="*70)
@@ -565,142 +661,129 @@ def main():
         print(f"  - dispersion_3.png (segmentos vs orden, sin Lima)")
         print(f"  - dispersion_4.png (área vs orden, sin Lima)")
         return
-    
-    # OPCIÓN 1: Análisis completo
-    
-    # 1. Cargar datos
+
+    # Pasos de procesamiento cuando se requieren mapas/polares/fichas/data
     print("\n[1/5] Cargando datos del GeoPackage...")
     gdf_cities = gpd.read_file(INPUT_GPKG)
     gdf_cities['geometry'] = gdf_cities['geometry'].buffer(0)
     gdf_cities = gdf_cities[gdf_cities.geometry.is_valid]
     print(f"  ✓ {len(gdf_cities)} ciudades cargadas")
     
-    # 2. Calcular densidades
     print("\n[2/5] Calculando áreas y densidades poblacionales...")
     gdf_cities = calcular_densidad(gdf_cities)
     print(f"  ✓ Densidades calculadas")
 
-    # 2b. Seleccionar top 3 por región (excluyendo Lima Metropolitana) para mapas/gráficos individuales
+    # Seleccionar top 3 por región (para mapas/polares) y agregar Lima
     gdf_top3 = select_top_cities(gdf_cities)
     top3_names = set(gdf_top3['CIUDAD'])
-    
-    # Agregar Lima Metropolitana a las ciudades que tendrán gráficos/mapas individuales
     lima_cities = gdf_cities[gdf_cities['CIUDAD'].str.upper() == 'LIMA METROPOLITANA']
     if not lima_cities.empty:
         top3_names.add(lima_cities.iloc[0]['CIUDAD'])
-    
     print(f"  ✓ Seleccionadas {len(top3_names)} ciudades para gráficos/mapas individuales (top 3 por región + Lima)")
 
-    # 2c. Asignar grupos de escala por población (4 grupos, grupo 1 = ciudades más grandes)
-    gdf_cities = assign_scale_group(gdf_cities)
-    half_extents = compute_group_half_extent_m(gdf_cities)
-
-    # 2d. Calcular extensión por ciudad según su grupo
+    # Extensiones para mapas/fichas cuando se necesitan
     map_extents = {}
-    for _, row in gdf_cities.iterrows():
-        grupo = row['grupo_escala']
-        half = half_extents.get(grupo)
-        if half:
-            map_extents[row['CIUDAD']] = build_map_extent(row['geometry'], half, gdf_cities.crs)
-    print(f"  ✓ Extensiones calculadas por grupos de escala")
-    
-    # 3. Procesar ciudades
-    print("\n[3/5] Procesando ciudades (descargando redes y generando gráficos/mapas)...")
+    if any([run_maps, run_polar, run_fichas]):
+        gdf_cities = assign_scale_group(gdf_cities)
+        half_extents = compute_group_half_extent_m(gdf_cities)
+        for _, row in gdf_cities.iterrows():
+            half = half_extents.get(row['grupo_escala'])
+            if half:
+                map_extents[row['CIUDAD']] = build_map_extent(row['geometry'], half, gdf_cities.crs)
+        print(f"  ✓ Extensiones calculadas por grupos de escala")
+
+    # Procesar ciudades
+    print("\n[3/5] Procesando ciudades (descargando redes y generando artefactos solicitados)...")
     print("  Nota: Este proceso puede tomar varios minutos...\n")
-    
     all_city_data = []
     all_graphs = []
-    
-    # Procesamiento secuencial (más estable que paralelo para OSMnx)
     for idx, (_, city_row) in enumerate(gdf_cities.iterrows()):
         city_extent = map_extents.get(city_row['CIUDAD'])
         is_top3 = city_row['CIUDAD'] in top3_names
-        result = process_city(idx, city_row, gdf_cities, city_extent, is_top3=is_top3)
+        result = process_city(
+            idx,
+            city_row,
+            gdf_cities,
+            city_extent,
+            is_top3=is_top3,
+            run_maps=run_maps,
+            run_polar=run_polar,
+            run_fichas=run_fichas,
+        )
         if result:
             city_data, graph = result
             all_city_data.append(city_data)
             all_graphs.append((city_data['nombre'], graph))
-    
+
     print(f"\n  ✓ {len(all_city_data)} ciudades procesadas exitosamente")
-    
-    # 3b. Crear gráficos de dispersión (con y sin Lima)
-    print("\n[3b/5] Creando gráficos de dispersión...")
-    try:
-        create_scatter_plots(all_city_data, exclude_lima=False)
-        create_scatter_plots(all_city_data, exclude_lima=True)
-        print("  ✓ Todos los gráficos de dispersión creados (con y sin Lima Metropolitana)")
-    except Exception as e:
-        print(f"  ✗ Error creando gráficos de dispersión: {e}")
-    
-    # 4. Guardar datos JSON
-    print("\n[4/5] Guardando datos JSON...")
-    
-    # JSON general con todas las ciudades
-    with open(OUTPUT_DIR / 'data' / 'ciudades.json', 'w', encoding='utf-8') as f:
-        json.dump(all_city_data, f, ensure_ascii=False, indent=2)
-    print("  ✓ ciudades.json")
-    
-    # JSON por región (top 3)
-    for region in ['Costa', 'Sierra', 'Selva']:
-        region_data = [c for c in all_city_data if c['region'] == region]
-        region_data.sort(key=lambda x: x['poblacion'], reverse=True)
-        top_3 = region_data[:3]
-        
-        with open(OUTPUT_DIR / 'data' / f'{region.lower()}_top3.json', 'w', encoding='utf-8') as f:
-            json.dump(top_3, f, ensure_ascii=False, indent=2)
-        print(f"  ✓ {region.lower()}_top3.json")
-    
-    # 5. Exportar GeoPackages
-    print("\n[5/5] Exportando GeoPackage unificado...")
-    
-    # Preparar polígonos urbanos
-    gdf_export = gdf_cities[['CIUDAD', 'POB17', 'REGNAT', 'DEPARTAMENTO', 
-                             'PROVINCIA', 'area_km2', 'densidad', 'geometry']].copy()
-    
-    # Consolidar redes de calles
-    print("  Consolidando redes de calles...")
-    all_edges = []
-    
-    for city_name, graph in all_graphs:
-        if graph is not None:
-            try:
-                edges = ox.graph_to_gdfs(graph, nodes=False, edges=True)
-                edges['ciudad_nombre'] = city_name
-                all_edges.append(edges)
-            except Exception as e:
-                print(f"  ✗ Error exportando calles de {city_name}: {e}")
-    
-    # Guardar en un solo GeoPackage con dos layers
-    gpkg_path = OUTPUT_DIR / 'data' / 'peru_sno.gpkg'
-    
-    # Layer 1: polígonos urbanos
-    gdf_export.to_file(gpkg_path, layer='poligonos_urbanos', driver='GPKG')
-    print(f"  ✓ Layer 'poligonos_urbanos' guardado")
-    
-    # Layer 2: red de calles
-    if all_edges:
-        gdf_streets = gpd.GeoDataFrame(pd.concat(all_edges, ignore_index=True))
-        # Mantener solo columnas relevantes
-        cols_to_keep = ['ciudad_nombre', 'geometry', 'bearing', 'length', 
-                        'highway', 'name', 'oneway']
-        cols_available = [c for c in cols_to_keep if c in gdf_streets.columns]
-        gdf_streets = gdf_streets[cols_available]
-        
-        gdf_streets.to_file(gpkg_path, layer='red_calles', driver='GPKG')
-        print(f"  ✓ Layer 'red_calles' guardado ({len(gdf_streets)} segmentos)")
-    
-    print(f"  ✓ peru_sno.gpkg creado con {2 if all_edges else 1} layers")
-    
+
+    # Gráficos de dispersión si se solicitaron
+    if run_dispersion:
+        print("\n[3b/5] Creando gráficos de dispersión...")
+        try:
+            create_scatter_plots(all_city_data, exclude_lima=False)
+            create_scatter_plots(all_city_data, exclude_lima=True)
+            print("  ✓ Todos los gráficos de dispersión creados (con y sin Lima Metropolitana)")
+        except Exception as e:
+            print(f"  ✗ Error creando gráficos de dispersión: {e}")
+
+    # Guardar datos JSON si se solicitó
+    if run_data_json:
+        print("\n[4/5] Guardando datos JSON...")
+        with open(OUTPUT_DIR / 'data' / 'ciudades.json', 'w', encoding='utf-8') as f:
+            json.dump(all_city_data, f, ensure_ascii=False, indent=2)
+        print("  ✓ ciudades.json")
+
+        for region in ['Costa', 'Sierra', 'Selva']:
+            region_data = [c for c in all_city_data if c['region'] == region]
+            region_data.sort(key=lambda x: x['poblacion'], reverse=True)
+            top_3 = region_data[:3]
+            with open(OUTPUT_DIR / 'data' / f'{region.lower()}_top3.json', 'w', encoding='utf-8') as f:
+                json.dump(top_3, f, ensure_ascii=False, indent=2)
+            print(f"  ✓ {region.lower()}_top3.json")
+
+    if run_data_gpkg:
+        print("\n[5/5] Exportando GeoPackage unificado...")
+        gdf_export = gdf_cities[['CIUDAD', 'POB17', 'REGNAT', 'DEPARTAMENTO', 
+                                 'PROVINCIA', 'area_km2', 'densidad', 'geometry']].copy()
+        print("  Consolidando redes de calles...")
+        all_edges = []
+        for city_name, graph in all_graphs:
+            if graph is not None:
+                try:
+                    edges = ox.graph_to_gdfs(graph, nodes=False, edges=True)
+                    edges['ciudad_nombre'] = city_name
+                    all_edges.append(edges)
+                except Exception as e:
+                    print(f"  ✗ Error exportando calles de {city_name}: {e}")
+
+        gpkg_path = OUTPUT_DIR / 'data' / 'peru_sno.gpkg'
+        gdf_export.to_file(gpkg_path, layer='poligonos_urbanos', driver='GPKG')
+        print(f"  ✓ Layer 'poligonos_urbanos' guardado")
+        if all_edges:
+            gdf_streets = gpd.GeoDataFrame(pd.concat(all_edges, ignore_index=True))
+            cols_to_keep = ['ciudad_nombre', 'geometry', 'bearing', 'length', 'highway', 'name', 'oneway']
+            cols_available = [c for c in cols_to_keep if c in gdf_streets.columns]
+            gdf_streets = gdf_streets[cols_available]
+            gdf_streets.to_file(gpkg_path, layer='red_calles', driver='GPKG')
+            print(f"  ✓ Layer 'red_calles' guardado ({len(gdf_streets)} segmentos)")
+        print(f"  ✓ peru_sno.gpkg creado con {2 if all_edges else 1} layers")
+
     # Resumen final
     print("\n" + "="*70)
-    print("✓ PRE-PROCESAMIENTO COMPLETADO")
+    print("✓ PROCESO COMPLETADO")
     print("="*70)
     print(f"\nArchivos generados en: {OUTPUT_DIR.absolute()}")
-    print(f"\n  Fichas:          {len(list((OUTPUT_DIR / 'fichas').glob('*.png')))} archivos PNG")
-    print(f"  Gráficos:        {len(list((OUTPUT_DIR / 'graficos').glob('*.png')))} archivos PNG")
-    print(f"  Mapas:           {len(list((OUTPUT_DIR / 'mapas').glob('*.png')))} archivos PNG")
-    print(f"  Datos JSON:      {len(list((OUTPUT_DIR / 'data').glob('*.json')))} archivos JSON")
-    print(f"  GeoPackages:     {len(list((OUTPUT_DIR / 'data').glob('*.gpkg')))} archivos GPKG")
+    if run_fichas:
+        print(f"  Fichas:          {len(list((OUTPUT_DIR / 'fichas').glob('*.png')))} archivos PNG")
+    if run_maps or run_polar or run_dispersion:
+        print(f"  Gráficos:        {len(list((OUTPUT_DIR / 'graficos').glob('*.png')))} archivos PNG")
+    if run_maps:
+        print(f"  Mapas:           {len(list((OUTPUT_DIR / 'mapas').glob('*.png')))} archivos PNG")
+    if run_data_json:
+        print(f"  Datos JSON:      {len(list((OUTPUT_DIR / 'data').glob('*.json')))} archivos JSON")
+    if run_data_gpkg:
+        print(f"  GeoPackages:     {len(list((OUTPUT_DIR / 'data').glob('*.gpkg')))} archivos GPKG")
     print("\n¡Ahora puedes usar estos archivos en tu aplicación web!")
 
 if __name__ == "__main__":

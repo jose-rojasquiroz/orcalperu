@@ -11345,9 +11345,9 @@
       194.0111102625966
     ],
     "num_segmentos": 11335,
-    "mapa_calles": "mapas/IQUITOS_mapa.png",
-    "grafico_polar": "graficos/IQUITOS_polar.png",
-    "ficha": "fichas/IQUITOS_ficha.png"
+    "mapa_calles": null,
+    "grafico_polar": null,
+    "ficha": null
   },
   {
     "nombre": "PUCALLPA",
@@ -31952,9 +31952,9 @@
       308.2530213398463
     ],
     "num_segmentos": 20592,
-    "mapa_calles": "mapas/PUCALLPA_mapa.png",
-    "grafico_polar": "graficos/PUCALLPA_polar.png",
-    "ficha": "fichas/PUCALLPA_ficha.png"
+    "mapa_calles": null,
+    "grafico_polar": null,
+    "ficha": null
   },
   {
     "nombre": "TARAPOTO",
@@ -39014,8 +39014,8 @@
       245.1401708300504
     ],
     "num_segmentos": 7047,
-    "mapa_calles": "mapas/TARAPOTO_mapa.png",
-    "grafico_polar": "graficos/TARAPOTO_polar.png",
-    "ficha": "fichas/TARAPOTO_ficha.png"
+    "mapa_calles": null,
+    "grafico_polar": null,
+    "ficha": null
   }
 ]

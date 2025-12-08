@@ -92569,9 +92569,9 @@
       127.3927534591248
     ],
     "num_segmentos": 92559,
-    "mapa_calles": "mapas/AREQUIPA_mapa.png",
-    "grafico_polar": "graficos/AREQUIPA_polar.png",
-    "ficha": "fichas/AREQUIPA_ficha.png"
+    "mapa_calles": null,
+    "grafico_polar": null,
+    "ficha": null
   },
   {
     "nombre": "HUANCAYO",
@@ -118582,9 +118582,9 @@
       186.6076063002196
     ],
     "num_segmentos": 25998,
-    "mapa_calles": "mapas/HUANCAYO_mapa.png",
-    "grafico_polar": "graficos/HUANCAYO_polar.png",
-    "ficha": "fichas/HUANCAYO_ficha.png"
+    "mapa_calles": null,
+    "grafico_polar": null,
+    "ficha": null
   },
   {
     "nombre": "CUSCO",
@@ -138987,8 +138987,8 @@
       20.839227864959202
     ],
     "num_segmentos": 20390,
-    "mapa_calles": "mapas/CUSCO_mapa.png",
-    "grafico_polar": "graficos/CUSCO_polar.png",
-    "ficha": "fichas/CUSCO_ficha.png"
+    "mapa_calles": null,
+    "grafico_polar": null,
+    "ficha": null
   }
 ]

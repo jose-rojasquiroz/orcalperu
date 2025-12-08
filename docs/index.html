@@ -89,6 +89,32 @@
         .region-sierra .narrative-text h2 { color: var(--color-sierra); }
         .region-selva .narrative-text h2 { color: var(--color-selva); }
 
+        /* COMPARATIVE CHART SECTION */
+        #analisis-comparativo {
+            background: var(--color-bg-alt);
+            border-top: 2px solid #e0e0e0;
+        }
+
+        #analisis-comparativo .narrative-text h2 {
+            color: var(--color-text);
+        }
+
+        .comparative-chart {
+            flex: 1 1 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .comparative-chart img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+
         .cities-showcase {
             flex: 1 1 auto;
             display: flex;
@@ -518,6 +544,19 @@
                 border-left: none;
             }
             
+            #analisis-comparativo {
+                flex-direction: column;
+            }
+
+            #analisis-comparativo .narrative-text {
+                order: 1;
+            }
+
+            .comparative-chart {
+                order: 0;
+                padding: 1.5rem;
+            }
+            
             .filter-controls {
                 grid-template-columns: 1fr;
             }
@@ -587,6 +626,22 @@
             </p>
         </div>
         <div class="cities-showcase" id="showcase-selva"></div>
+    </section>
+
+    <!-- ANÁLISIS COMPARATIVO SECTION -->
+    <section id="analisis-comparativo" class="narrative-section">
+        <div class="narrative-text">
+            <h2>Análisis comparativo</h2>
+            <p>
+                Exploración de la relación entre el tamaño urbano y la orientación de calles en las principales ciudades del Perú. 
+                Esta visualización presenta un análisis comparativo de cómo varían los patrones de orientación de calles 
+                en función del número de segmentos de calles identificados en cada ciudad. Un valor bajo de desviación estándar 
+                indica una mayor orientación preferida, sugiriendo estructuras viales más ordenadas.
+            </p>
+        </div>
+        <div class="comparative-chart">
+            <img src="graficos/dispersion_3.png" alt="Análisis comparativo de orientación de calles">
+        </div>
     </section>
 
     <!-- FILTER SECTION -->
