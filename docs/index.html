@@ -641,7 +641,7 @@ La revisión de estos patrones puede darnos luces sobre los procesos históricos
             </div>
         </section>
 
-        <!-- LIMA METROPOLITANA SECTION -->
+        <!-- LIMA METROPOLITANA Y CALLAO SECTION -->
         <section id="lima" class="narrative-section">
             <div class="narrative-text">
                 <p>
@@ -704,6 +704,11 @@ La revisión de estos patrones puede darnos luces sobre los procesos históricos
         // Función para capitalizar correctamente nombres de ciudades
         function capitalizeFirstLetter(str) {
             if (!str) return '';
+            
+            // Caso especial: Lima Metropolitana se muestra como "Lima metropolitana y Callao"
+            if (str.toUpperCase() === 'LIMA METROPOLITANA') {
+                return 'Lima metropolitana y Callao';
+            }
             
             // Palabras conectoras que no se capitalizan (excepto al inicio)
             const connectors = ['de', 'la', 'el', 'los', 'las', 'y', 'e', 'o', 'u', 'a'];
@@ -801,7 +806,7 @@ La revisión de estos patrones puede darnos luces sobre los procesos históricos
             }
         }
 
-        // Cargar una ciudad individual (para Lima Metropolitana)
+        // Cargar una ciudad individual (para Lima metropolitana y Callao)
         async function loadIndividualCity(cityName, containerId) {
             const container = document.getElementById(containerId);
             
