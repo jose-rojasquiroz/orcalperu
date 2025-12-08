@@ -766,8 +766,9 @@
             const card = document.createElement('div');
             card.className = 'city-showcase';
             
-            const mapImg = `mapas/${city.nombre}_mapa.png`;
-            const polarImg = `graficos/${city.nombre}_polar.png`;
+            const cityNameFile = city.nombre.replace(/ /g, '_');
+            const mapImg = `mapas/${cityNameFile}_mapa.png`;
+            const polarImg = `graficos/${cityNameFile}_polar.png`;
             
             card.innerHTML = `
                 <div class="showcase-header">
