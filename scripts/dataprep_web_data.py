@@ -10,7 +10,7 @@ from shapely.geometry import box, LineString
 import warnings
 warnings.filterwarnings('ignore')
 
-# Configurar matplotlib para usar fuente LaTeX
+# Configurar matplotlib para usar fuente STIX Two Text (la misma del HTML)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['font.serif'] = ['STIX Two Text', 'Times New Roman', 'DejaVu Serif']
 plt.rcParams['text.usetex'] = False  # Usar fuentes del sistema en lugar de LaTeX
@@ -299,8 +299,7 @@ def create_scatter_plots(all_city_data, exclude_lima=False):
                       label=region)
         
         ax.set_xlabel('Número de segmentos de calles', fontsize=14, fontweight='bold')
-        ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
-        ax.set_title('Orden en calles vs Número de segmentos (sin Lima)', fontsize=16, fontweight='bold', pad=20)
+        ax.set_ylabel('Desviación estándar de orientación (en grados)', fontsize=14, fontweight='bold')
         ax.grid(True, alpha=0.3, linestyle='--')
         ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
         
@@ -317,6 +316,34 @@ def create_scatter_plots(all_city_data, exclude_lima=False):
         plt.close()
         print(f"  ✓ Gráfico guardado: dispersion_3.png")
         
+        # DISPERSION_4.PNG: Área vs Desviación Estándar sin Lima Metropolitana
+        fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
+        
+        for region in ['Costa', 'Sierra', 'Selva']:
+            subset = cities_df[cities_df['region'] == region]
+            ax.scatter(subset['area_km2'], subset['bearing_std'], 
+                      s=subset['marker_size'], alpha=0.6, 
+                      color=color_map[region], edgecolors='none',
+                      label=region)
+        
+        ax.set_xlabel('Área urbana (km²)', fontsize=14, fontweight='bold')
+        ax.set_ylabel('Desviación estándar de orientación (en grados)', fontsize=14, fontweight='bold')
+        ax.grid(True, alpha=0.3, linestyle='--')
+        ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
+        
+        # Anotar ciudades seleccionadas (top 5 Costa, top 3 Sierra, top 3 Selva)
+        for _, row in cities_df.iterrows():
+            if row['nombre'] in cities_to_label:
+                ax.annotate(row['nombre'].split()[0], 
+                           (row['area_km2'], row['bearing_std']),
+                           fontsize=8, alpha=0.7, xytext=(5, 5), 
+                           textcoords='offset points')
+        
+        plt.tight_layout()
+        plt.savefig(OUTPUT_DIR / 'graficos' / 'dispersion_4.png', dpi=300, bbox_inches='tight')
+        plt.close()
+        print(f"  ✓ Gráfico guardado: dispersion_4.png")
+        
     else:
         # GRÁFICO 1: Segmentos vs Desviación Estándar (tamaño estándar)
         fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
@@ -329,8 +356,7 @@ def create_scatter_plots(all_city_data, exclude_lima=False):
                       label=region)
         
         ax.set_xlabel('Número de segmentos de calles', fontsize=14, fontweight='bold')
-        ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
-        ax.set_title('Orden en calles vs Número de segmentos', fontsize=16, fontweight='bold', pad=20)
+        ax.set_ylabel('Desviación estándar de orientación (en grados)', fontsize=14, fontweight='bold')
         ax.grid(True, alpha=0.3, linestyle='--')
         ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
         
@@ -358,8 +384,7 @@ def create_scatter_plots(all_city_data, exclude_lima=False):
                       label=region)
         
         ax.set_xlabel('Área urbana (km²)', fontsize=14, fontweight='bold')
-        ax.set_ylabel('Desviación estándar de orientación (°)', fontsize=14, fontweight='bold')
-        ax.set_title('Orden en calles vs Área urbana', fontsize=16, fontweight='bold', pad=20)
+        ax.set_ylabel('Desviación estándar de orientación (en grados)', fontsize=14, fontweight='bold')
         ax.grid(True, alpha=0.3, linestyle='--')
         ax.legend(fontsize=12, title='Región', title_fontsize=13, framealpha=0.95)
         
