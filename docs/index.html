@@ -89,13 +89,28 @@
         .region-sierra .narrative-text h2 { color: var(--color-sierra); }
         .region-selva .narrative-text h2 { color: var(--color-selva); }
 
+        /* MAIN CONTENT CONTAINER - Sin bordes de separación */
+        .main-content-container {
+            background: var(--color-bg);
+        }
+
         /* COMPARATIVE CHART SECTION */
         #analisis-comparativo {
-            background: var(--color-bg-alt);
-            border-top: 2px solid #e0e0e0;
+            background: var(--color-bg);
+            border-top: none;
         }
 
         #analisis-comparativo .narrative-text h2 {
+            color: var(--color-text);
+        }
+
+        /* LIMA SECTION */
+        #lima {
+            background: var(--color-bg);
+            border-top: none;
+        }
+
+        #lima .narrative-text h2 {
             color: var(--color-text);
         }
 
@@ -589,60 +604,76 @@
         </p>
     </section>
 
-    <!-- COSTA SECTION -->
-    <section id="costa" class="narrative-section region-costa">
-        <div class="narrative-text">
-            <h2>Costa</h2>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
-        </div>
-        <div class="cities-showcase" id="showcase-costa"></div>
-    </section>
+    <!-- MAIN CONTENT CONTAINER - Todas las secciones sin separaciones -->
+    <div class="main-content-container">
+        <!-- COSTA SECTION -->
+        <section id="costa" class="narrative-section region-costa">
+            <div class="narrative-text">
+                <h2>Costa</h2>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+            </div>
+            <div class="cities-showcase" id="showcase-costa"></div>
+        </section>
 
-    <!-- SIERRA SECTION -->
-    <section id="sierra" class="narrative-section region-sierra">
-        <div class="narrative-text">
-            <h2>Sierra</h2>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
-        </div>
-        <div class="cities-showcase" id="showcase-sierra"></div>
-    </section>
+        <!-- SIERRA SECTION -->
+        <section id="sierra" class="narrative-section region-sierra">
+            <div class="narrative-text">
+                <h2>Sierra</h2>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+            </div>
+            <div class="cities-showcase" id="showcase-sierra"></div>
+        </section>
 
-    <!-- SELVA SECTION -->
-    <section id="selva" class="narrative-section region-selva">
-        <div class="narrative-text">
-            <h2>Selva</h2>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
-        </div>
-        <div class="cities-showcase" id="showcase-selva"></div>
-    </section>
+        <!-- SELVA SECTION -->
+        <section id="selva" class="narrative-section region-selva">
+            <div class="narrative-text">
+                <h2>Selva</h2>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+            </div>
+            <div class="cities-showcase" id="showcase-selva"></div>
+        </section>
 
-    <!-- ANÁLISIS COMPARATIVO SECTION -->
-    <section id="analisis-comparativo" class="narrative-section">
-        <div class="narrative-text">
-            <h2>Análisis comparativo</h2>
-            <p>
-                Exploración de la relación entre el tamaño urbano y la orientación de calles en las principales ciudades del Perú. 
-                Esta visualización presenta un análisis comparativo de cómo varían los patrones de orientación de calles 
-                en función del número de segmentos de calles identificados en cada ciudad. Un valor bajo de desviación estándar 
-                indica una mayor orientación preferida, sugiriendo estructuras viales más ordenadas.
-            </p>
-        </div>
-        <div class="comparative-chart">
-            <img src="graficos/dispersion_3.png" alt="Análisis comparativo de orientación de calles">
-        </div>
-    </section>
+        <!-- ANÁLISIS COMPARATIVO SECTION -->
+        <section id="analisis-comparativo" class="narrative-section">
+            <div class="narrative-text">
+                <h2>Análisis comparativo</h2>
+                <p>
+                    Exploración de la relación entre el tamaño urbano y la orientación de calles en las principales ciudades del Perú. 
+                    Esta visualización presenta un análisis comparativo de cómo varían los patrones de orientación de calles 
+                    en función del número de segmentos de calles identificados en cada ciudad. Un valor bajo de desviación estándar 
+                    indica una mayor orientación preferida, sugiriendo estructuras viales más ordenadas.
+                </p>
+            </div>
+            <div class="comparative-chart">
+                <img src="graficos/dispersion_3.png" alt="Análisis comparativo de orientación de calles">
+            </div>
+        </section>
+
+        <!-- LIMA METROPOLITANA SECTION -->
+        <section id="lima" class="narrative-section">
+            <div class="narrative-text">
+                <h2>Lima metropolitana</h2>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+            </div>
+            <div class="cities-showcase" id="showcase-lima"></div>
+        </section>
+    </div>
 
     <!-- FILTER SECTION -->
     <section class="filter-section" id="filtros">
@@ -792,6 +823,30 @@
             }
         }
 
+        // Cargar una ciudad individual (para Lima Metropolitana)
+        async function loadIndividualCity(cityName, containerId) {
+            const container = document.getElementById(containerId);
+            
+            try {
+                const response = await fetch(`${DATA_PATH}ciudades.json`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const allCitiesData = await response.json();
+                const city = allCitiesData.find(c => c.nombre.toUpperCase() === cityName.toUpperCase());
+                
+                if (!city) {
+                    throw new Error(`Ciudad no encontrada: ${cityName}`);
+                }
+                
+                container.innerHTML = '';
+                container.appendChild(createShowcaseCard(city));
+                
+            } catch (error) {
+                console.error(`Error cargando ${cityName}:`, error);
+                container.innerHTML = `<div style="grid-column: 1/-1; color: #c33;">Error cargando datos</div>`;
+            }
+        }
+
         // Cargar todas las ciudades
         async function loadAllCities() {
             try {
@@ -917,6 +972,7 @@
             loadShowcase('costa');
             loadShowcase('sierra');
             loadShowcase('selva');
+            loadIndividualCity('LIMA METROPOLITANA', 'showcase-lima');
             loadAllCities();
         });
     </script>
