@@ -93,95 +93,131 @@
             flex: 1 1 auto;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 2.5rem;
         }
 
-        /* CITY SHOWCASE CARD */
+        /* CITY SHOWCASE CARD - Estilo Ficha */
         .city-showcase {
             background: white;
             border: 1px solid #e0e0e0;
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 320px;
         }
 
         .city-showcase:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
 
         .showcase-header {
-            padding: 1.5rem;
+            padding: 1.25rem;
             border-bottom: 1px solid #e0e0e0;
             background: var(--color-bg-alt);
         }
 
         .showcase-name {
-            font-size: 1.4rem;
-            font-weight: 600;
+            font-size: 1.3rem;
+            font-weight: 700;
             color: var(--color-text);
             margin-bottom: 0.25rem;
         }
 
         .showcase-location {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--color-text-light);
         }
 
+        /* Grid layout: Mapa izquierda (grande), Polar y Stats derecha (stacked) */
         .showcase-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.4fr 1fr;
+            grid-template-rows: auto auto;
             gap: 0;
+            flex: 1;
+            overflow: hidden;
         }
 
-        .showcase-visual {
-            padding: 1rem;
+        .showcase-map {
+            grid-column: 1;
+            grid-row: 1 / 3;
+            padding: 0.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
             background: var(--color-bg-alt);
+            overflow: hidden;
+        }
+
+        .showcase-map img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .showcase-polar {
+            grid-column: 2;
+            grid-row: 1;
+            padding: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-left: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            overflow: hidden;
             aspect-ratio: 1;
         }
 
-        .showcase-visual img {
-            max-width: 90%;
-            max-height: 90%;
+        .showcase-polar img {
+            max-width: 95%;
+            max-height: 95%;
             object-fit: contain;
         }
 
         .showcase-stats {
+            grid-column: 2;
+            grid-row: 2;
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
-            padding: 1.5rem;
-            gap: 1rem;
+            justify-content: flex-start;
+            padding: 1rem;
+            background: white;
+            border-left: 1px solid #e0e0e0;
+            gap: 0.8rem;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
 
         .stat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .stat-item:last-child {
+            gap: 0.75rem;
             border-bottom: none;
             padding-bottom: 0;
         }
 
         .stat-label {
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--color-text-light);
-            font-weight: 600;
+            font-weight: 700;
+            flex: 0 1 auto;
         }
 
         .stat-value {
-            font-size: 1.3rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--color-text);
+            text-align: right;
+            flex: 0 0 auto;
+            white-space: nowrap;
         }
 
         /* FILTER SECTION */
@@ -414,13 +450,35 @@
             .cities-showcase {
                 order: -1;
             }
+            
+            /* Responsive showcase cards */
             .showcase-content {
                 grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
             }
-            .showcase-visual {
-                aspect-ratio: auto;
+            
+            .showcase-map {
+                grid-column: 1;
+                grid-row: 1;
+                border-left: none;
                 min-height: 200px;
             }
+            
+            .showcase-polar {
+                grid-column: 1;
+                grid-row: 2;
+                border-left: none;
+                border-bottom: 1px solid #e0e0e0;
+                aspect-ratio: auto;
+                min-height: 150px;
+            }
+            
+            .showcase-stats {
+                grid-column: 1;
+                grid-row: 3;
+                border-left: none;
+            }
+            
             .filter-controls {
                 grid-template-columns: 1fr;
             }
@@ -551,13 +609,13 @@
             return num.toString();
         }
 
-        // Crear tarjeta de ciudad para showcase
+        // Crear tarjeta de ciudad para showcase (estilo ficha)
         function createShowcaseCard(city) {
             const card = document.createElement('div');
             card.className = 'city-showcase';
             
-            const polarImg = `graficos/${city.nombre}_polar.png`;
             const mapImg = `mapas/${city.nombre}_mapa.png`;
+            const polarImg = `graficos/${city.nombre}_polar.png`;
             
             card.innerHTML = `
                 <div class="showcase-header">
@@ -565,27 +623,27 @@
                     <div class="showcase-location">${city.provincia || 'N/A'}, ${city.departamento || 'N/A'}</div>
                 </div>
                 <div class="showcase-content">
-                    <div class="showcase-visual">
+                    <div class="showcase-map">
+                        <img src="${mapImg}" alt="Mapa ${city.nombre}" 
+                             onerror="this.alt='Mapa no disponible'">
+                    </div>
+                    <div class="showcase-polar">
                         <img src="${polarImg}" alt="Orientación ${city.nombre}" 
                              onerror="this.alt='Gráfico no disponible'">
                     </div>
-                    <div class="showcase-visual">
-                        <img src="${mapImg}" alt="Mapa ${city.nombre}"
-                             onerror="this.alt='Mapa no disponible'">
-                    </div>
-                </div>
-                <div class="showcase-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Población</span>
-                        <span class="stat-value">${formatNumber(city.poblacion)}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Área</span>
-                        <span class="stat-value">${city.area_km2.toFixed(1)} km²</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Densidad</span>
-                        <span class="stat-value">${Math.round(city.densidad)} hab/km²</span>
+                    <div class="showcase-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Población</span>
+                            <span class="stat-value">${formatNumber(city.poblacion)}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Área urbana</span>
+                            <span class="stat-value">${city.area_km2.toFixed(1)} km²</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Densidad</span>
+                            <span class="stat-value">${Math.round(city.densidad)} hab/km²</span>
+                        </div>
                     </div>
                 </div>
             `;
