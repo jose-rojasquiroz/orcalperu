@@ -78,16 +78,21 @@
             color: var(--color-text-light);
         }
 
-        .narrative-text h2 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--color-text);
+        /* Colores para palabras regionales */
+        .word-costa {
+            color: var(--color-costa);
+            font-weight: 500;
         }
 
-        .region-costa .narrative-text h2 { color: var(--color-costa); }
-        .region-sierra .narrative-text h2 { color: var(--color-sierra); }
-        .region-selva .narrative-text h2 { color: var(--color-selva); }
+        .word-sierra {
+            color: var(--color-sierra);
+            font-weight: 500;
+        }
+
+        .word-selva {
+            color: var(--color-selva);
+            font-weight: 500;
+        }
 
         /* MAIN CONTENT CONTAINER - Sin bordes de separación */
         .main-content-container {
@@ -100,18 +105,10 @@
             border-top: none;
         }
 
-        #analisis-comparativo .narrative-text h2 {
-            color: var(--color-text);
-        }
-
         /* LIMA SECTION */
         #lima {
             background: var(--color-bg);
             border-top: none;
-        }
-
-        #lima .narrative-text h2 {
-            color: var(--color-text);
         }
 
         .comparative-chart {
@@ -599,8 +596,9 @@
     <section class="hero">
         <h1>Orientación de calles en las principales ciudades del Perú</h1>
         <p>
-            Explora la estructura vial urbana a través de la orientación de las calles 
-            en las tres ciudades más pobladas de cada región natural del Perú.
+            ¿Les ha pasado que, habiendo crecido en una ciudad intermedia, tener que visitar Lima les supone un problema para orientarse en la ciudad? Pues, parece, no es porque tengan(mos) mal sentido de la ubicación, sino que realmente Lima tiene una distribución, por decirlo menos, caótica. 
+Los gráficos que verán a continuación representan la orientación de las calles en las tres ciudades más grandes de la costa, sierra y selva del Perú. En cada uno, la dirección de las barras indica su orientación, mientras que la longitud muestra qué tan frecuente es esa orientación en la ciudad. 
+La revisión de estos patrones puede darnos luces sobre los procesos históricos del desarrollo de las ciudades, las culturas que allí se han asentado a lo largo del tiempo o las condiciones socioeconómicas locales que les han dado forma, pero también sobre cómo gestionarlas y planificarlas de cara al futuro. Por poner un ejemplo: ¿En donde creen que será más sencillo montar una red de transporte público eficiente? ¿En una ciudad con muchos o pocos cambios de dirección? 
         </p>
     </section>
 
@@ -609,37 +607,23 @@
         <!-- COSTA SECTION -->
         <section id="costa" class="narrative-section region-costa">
             <div class="narrative-text">
-                <h2>Costa</h2>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    Mi primera impresión al ver la distribución de Trujillo es: ¡caos! Un poco de todo por todos lados. 
+                    Sin embargo, al ver otras ciudades de la <span class="word-costa">costa</span> con un poco menos de población el panorama cambia. 
+                    De hecho, en la mayoría de ciudades intermedias de esta zona del país los histogramas parecen mostrar una distribución ordenada de sus calles.
                 </p>
             </div>
             <div class="cities-showcase" id="showcase-costa"></div>
         </section>
 
-        <!-- SIERRA SECTION -->
-        <section id="sierra" class="narrative-section region-sierra">
-            <div class="narrative-text">
-                <h2>Sierra</h2>
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                </p>
-            </div>
+        <!-- SIERRA Y SELVA SECTION -->
+        <section id="sierra-selva" class="narrative-section region-sierra">
             <div class="cities-showcase" id="showcase-sierra"></div>
-        </section>
-
-        <!-- SELVA SECTION -->
-        <section id="selva" class="narrative-section region-selva">
             <div class="narrative-text">
-                <h2>Selva</h2>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    En las ciudades de la <span class="word-sierra">sierra</span> y de la <span class="word-selva">selva</span> paso algo parecido: cuando revisamos las ciudades más grandes el gráfico polar toma muchas direcciones, pero a medida que se revisan ciudades más pequeñas, las calles parecen estar más ordenadas. 
+                    De hecho me llamó la atención lo ordenadas que son las calles en Cusco y Huancayo, ciudades que, por tener una topografía bastante más marcada que las de la <span class="word-costa">costa</span> habría esperado que muestren una distribución más variada. 
+                    Por supuesto esto es una sobresimplificación producto de una revisión masiva. Seguramente si se revisaran barrios dentro de las ciudades se van a encontrar patrones muy variados. Pero como primera aproximación me parece interesante.
                 </p>
             </div>
             <div class="cities-showcase" id="showcase-selva"></div>
@@ -648,12 +632,8 @@
         <!-- ANÁLISIS COMPARATIVO SECTION -->
         <section id="analisis-comparativo" class="narrative-section">
             <div class="narrative-text">
-                <h2>Análisis comparativo</h2>
                 <p>
-                    Exploración de la relación entre el tamaño urbano y la orientación de calles en las principales ciudades del Perú. 
-                    Esta visualización presenta un análisis comparativo de cómo varían los patrones de orientación de calles 
-                    en función del número de segmentos de calles identificados en cada ciudad. Un valor bajo de desviación estándar 
-                    indica una mayor orientación preferida, sugiriendo estructuras viales más ordenadas.
+                    De hecho, al revisar la relación entre cuánto varía la orientación de las calles con el área urbana de las ciudades, se puede ver claramente que hay una correlación positiva: a más tamaño, más "desordenada" es la red de calles. 
                 </p>
             </div>
             <div class="comparative-chart">
@@ -664,11 +644,8 @@
         <!-- LIMA METROPOLITANA SECTION -->
         <section id="lima" class="narrative-section">
             <div class="narrative-text">
-                <h2>Lima metropolitana</h2>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    Y Lima metropolitana y Callao, la más grande y poblada del país así lo demuestra.
                 </p>
             </div>
             <div class="cities-showcase" id="showcase-lima"></div>
@@ -714,8 +691,8 @@
         <p>Elaborado por <a href="https://jose-rojasquiroz.github.io/" target="_blank">José Rojas-Quiroz</a></p>
         <p>Datos: INEI 2017, OpenStreetMap y OSMNx</p>
         <div class="footer-links">
-            <a href="data/peru_sno.gpkg" class="footer-link-btn" download>📥 Descargar GeoPackage</a>
-            <a href="https://github.com/jose-rojasquiroz/peru_sno" target="_blank" class="footer-link-btn">🔗 Ver repositorio GitHub</a>
+            <a href="https://github.com/jose-rojasquiroz/peru_sno/raw/refs/heads/main/data/pu-principalesciudades-WGS84.gpkg?download=" class="footer-link-btn" download> Descargar GeoPackage</a>
+            <a href="https://github.com/jose-rojasquiroz/orcalperu" target="_blank" class="footer-link-btn"> Ver repositorio GitHub</a>
         </div>
     </footer>
 
