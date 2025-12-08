@@ -594,7 +594,7 @@
         <h2>Explora todas las ciudades</h2>
         <div class="filter-controls">
             <div class="filter-group">
-                <label for="filter-region">Región</label>
+                <label for="filter-region">Región natural</label>
                 <select id="filter-region" onchange="updateFilters()">
                     <option value="">Todas</option>
                     <option value="Costa">Costa</option>
@@ -638,10 +638,31 @@
         let allCities = [];
         let selectedCities = new Set();
 
-        // Función para capitalizar solo la primera letra
+        // Función para capitalizar correctamente nombres de ciudades
         function capitalizeFirstLetter(str) {
             if (!str) return '';
-            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+            
+            // Palabras conectoras que no se capitalizan (excepto al inicio)
+            const connectors = ['de', 'la', 'el', 'los', 'las', 'y', 'e', 'o', 'u', 'a'];
+            
+            // Dividir la cadena en palabras
+            const words = str.toLowerCase().split(' ');
+            
+            // Capitalizar cada palabra según la regla
+            const capitalized = words.map((word, index) => {
+                // Primera palabra siempre se capitaliza
+                if (index === 0) {
+                    return word.charAt(0).toUpperCase() + word.slice(1);
+                }
+                // Si es un conector, no capitalizar
+                if (connectors.includes(word)) {
+                    return word;
+                }
+                // Resto de palabras: capitalizar
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            });
+            
+            return capitalized.join(' ');
         }
 
         // Función para formatear números
